@@ -96,7 +96,7 @@ mybot.on("message", function(message) {
 mybot.loginWithToken(process.env.BOT_TOKEN, function(err) { console.log(err ? "Error: " + err : "Logged in"); });
 
 mybot.on('ready', () => {
-	mybot.joinVoiceChannel(0, function(err) {
+	mybot.joinVoiceChannel(process.env.MUSIC_CHANNEL, function(err) {
 	if(!err) {
 	   mybot.voiceConnection.playRawStream(ytdl("https://www.youtube.com/watch?v=RAP0fzBsjQk", {filter: 'audioonly'}).on('error', e => {
 		 console.log(e);
@@ -125,7 +125,7 @@ function getRole(name, roles) {
 }
 
 function playSong(url) {
-  var jbr = getChannel("general_heisenberg", 0).id;
+  var jbr = process.env.MUSIC_CHANNEL;
   if(paused) // Turn stream on again so it doesn't crash
     mybot.voiceConnection.resume();
   mybot.voiceConnection.stopPlaying();
