@@ -1,0 +1,19 @@
+{
+  "name": "CheesemongerBot",
+  "description": "Yeet",
+  "version": "0.0.0",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "discord.js": "^8.2.0",
+    "fluent-ffmpeg": "^2.1.0",
+    "node-opus": "^0.2.1",
+    "youtube-audio-stream": "0.0.25",
+    "youtube-mp3": "^0.1.2",
+    "youtube-node": "^1.3.0",
+    "youtube-to-mp3": "^0.1.1",
+    "ytdl-core": "^0.7.16"
+  }
+}
