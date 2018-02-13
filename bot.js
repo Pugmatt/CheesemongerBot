@@ -96,7 +96,7 @@ mybot.on("message", function(message) {
 mybot.loginWithToken(process.env.BOT_TOKEN, function(err) { console.log(err ? "Error: " + err : "Logged in"); });
 
 mybot.on('ready', () => {
-	mybot.joinVoiceChannel(getChannel("General", 2).id, function(err) {
+	mybot.joinVoiceChannel(getChannel(process.env.VOICE_CHANNEL, 2).id, function(err) {
 	if(!err) {
 	   mybot.voiceConnection.playRawStream(ytdl("https://www.youtube.com/watch?v=RAP0fzBsjQk", {filter: 'audioonly'}).on('error', e => {
 		 console.log(e);
