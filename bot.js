@@ -25,7 +25,7 @@ mybot.on("message", function(message) {
       || message.content.startsWith("!help")) {
         mybot.reply(message, "Bot commands: \n\nJukebox:\n- !play [youtube url] ~ Request song to bot\n- !queue ~ View queue\n- !time ~ View current time stamp of current playing\n- !pause ~ [ADMIN COMMAND] Pause current song\n- !resume ~ [ADMIN COMMAND] Resume current song\n- !next ~ [ADMIN COMMAND] Skip to next song in queue");
       }
-      if(message.content.toLowerCase().contains("medic!")) {
+      if(message.content.toLowerCase().includes("medic!")) {
 	var msgs = ["Here, take a load off breh", "Here ya go", "This'll heal yeh right up", "gotchu breh", "ba da bing, the code red has arrived", "Drink this and you'll be good as new, if not better tbh", "succ", "drink up bubby"];
 	mybot.sendMessage(message.channel.id, msgs[Math.floor(Math.random() * 8)], {
 	    file: "https://i.imgur.com/EWdC60g.png"
