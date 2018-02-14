@@ -25,7 +25,7 @@ mybot.on("message", function(message) {
       || message.content.startsWith("!help")) {
         mybot.reply(message, "Bot commands: \n\nJukebox:\n- !play [youtube url] ~ Request song to bot\n- !queue ~ View queue\n- !time ~ View current time stamp of current playing\n- !pause ~ [ADMIN COMMAND] Pause current song\n- !resume ~ [ADMIN COMMAND] Resume current song\n- !next ~ [ADMIN COMMAND] Skip to next song in queue");
       }
-      var jbr = getChannel("general_heisenberg", 0).id; // jukeboxrequest channel id
+      var jbr = process.env.MUSIC_CHAT_CHANNEL; // jukeboxrequest channel id
       if(message.channel.id == jbr) { // If message is coming from the jukeboxrequest channel
         if(message.content.startsWith("!play")) {
           if(!mybot.voiceConnection.playing) {
