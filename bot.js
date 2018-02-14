@@ -93,6 +93,12 @@ mybot.on("message", function(message) {
     }
 });
 
+mybot.on("presenceUpdate", (oldMember, newMember) => {
+    if(oldMember.presence.status !== newMember.presence.status){
+        console.log(`${newMember.user.username} is now ${newMember.presence.status}`);
+    }
+});
+
 mybot.loginWithToken(process.env.BOT_TOKEN, function(err) { console.log(err ? "Error: " + err : "Logged in"); });
 
 mybot.on('ready', () => {
