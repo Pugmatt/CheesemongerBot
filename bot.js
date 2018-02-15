@@ -120,6 +120,11 @@ mybot.on('ready', () => {
  // });
 });
 
+mybot.on('disconnect', function(msg, code) {
+    if (code === 0) return console.error(msg);
+    mybot.connect();
+});
+
 function getChannel(name, type) {
   for(var i=0;i<mybot.channels.length;i++) {
     var channel = mybot.channels[i];
