@@ -1,5 +1,12 @@
 var Discord = require("discord.js");
 var YouTube = require('youtube-node');
+const request = require('request');
+const cheerio = require('cheerio');
+var fs = require('fs');
+var https = require('https');
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+const ffmpeg = require('fluent-ffmpeg');
+ffmpeg.setFfmpegPath(ffmpegPath);
 
 var youTube = new YouTube();
 
@@ -18,6 +25,52 @@ mybot.on("message", function(message) {
 	var isAdmin = true;
     //var isAdmin = mybot.memberHasRole(message.author, getRole("admins", message.channel.server.roles));
     if(!message.author.bot) {
+
+      if(message.content.indexOf("reddit.com") != -1) {
+        var message_split = message.content.split(" ");
+        for(var i=0;i<message_split.length;i++) {
+          if(message_split[i].indexOf("reddit.com") != -1) {
+            var url = message_split[i];
+            if(!url.startsWith("http"))
+              url = "https://" + url;
+            request(url, function (error, response, body) {
+              if(error) {
+                console.error('error:', error);
+              } else if(body) {
+                const $ = cheerio.load(body);
+                if($("video source")) {
+                  console.log("Downloading: " + $("video source")[0].attribs.src);
+
+                  var url_parts = $("video source")[0].attribs.src.split("/");
+                  url_parts[url_parts.length-1] = "HLS_360.ts";
+                  var video = url_parts.join("/");
+                  url_parts[url_parts.length-1] = "HLS_AUDIO_160_K.ts";
+                  var audio = url_parts.join("/");
+
+                   ffmpeg(video)
+                   .input(audio)
+                   .outputOptions("-c:v", "copy")
+                   .save($("video source")[0].attribs.src.replace(/[^0-9a-z]/gi, '') + '.mp4')
+                   .on('end', function() {
+                    console.log('Converted and sending');
+
+                      mybot.sendMessage(message.channel.id, "", {
+                        file: $("video source")[0].attribs.src.replace(/[^0-9a-z]/gi, '') + '.mp4'
+                      }).then(function() {
+                        fs.unlink($("video source")[0].attribs.src.replace(/[^0-9a-z]/gi, '') + '.mp4', function() {});
+                      });
+                    })
+                    .on('error', function(err) {
+                       console.log('an error happened: ' + err.message);
+                   }); 
+                }
+              } 
+            });
+          }
+        }
+      }
+
+
       if(message.content.includes("( ͡° ͜ʖ ͡°)")) { // "The best command" - fer22f
         mybot.sendMessage(message.channel.id, "( ͡°( ͡° ͜ʖ( ͡° ͜ʖ ͡°)ʖ ͡°) ͡°)");
       }
@@ -26,10 +79,10 @@ mybot.on("message", function(message) {
         mybot.reply(message, "Bot commands: \n\nJukebox:\n- !play [youtube url] ~ Request song to bot\n- !queue ~ View queue\n- !time ~ View current time stamp of current playing\n- !pause ~ [ADMIN COMMAND] Pause current song\n- !resume ~ [ADMIN COMMAND] Resume current song\n- !next ~ [ADMIN COMMAND] Skip to next song in queue");
       }
       if(message.content.toLowerCase().includes("medic!")) {
-	var msgs = ["Here, take a load off breh", "Here ya go", "This'll heal yeh right up", "gotchu breh", "ba da bing, the code red has arrived", "Drink this and you'll be good as new, if not better tbh", "succ", "drink up bubby"];
-	mybot.sendMessage(message.channel.id, msgs[Math.floor(Math.random() * 8)], {
-	    file: "https://i.imgur.com/EWdC60g.png"
-	});
+        var msgs = ["Here, take a load off breh", "Here ya go", "This'll heal yeh right up", "gotchu breh", "ba da bing, the code red has arrived", "Drink this and you'll be good as new, if not better tbh", "succ", "drink up bubby"];
+        mybot.sendMessage(message.channel.id, msgs[Math.floor(Math.random() * 8)], {
+            file: "https://i.imgur.com/EWdC60g.png"
+        });
       }
       var jbr = process.env.MUSIC_CHAT_CHANNEL; // jukeboxrequest channel id
       if(message.channel.id == jbr) { // If message is coming from the jukeboxrequest channel
