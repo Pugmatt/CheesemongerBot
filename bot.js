@@ -1,18 +1,18 @@
 const Discord = require('discord.js');
 
+const CommandManager = require('./commands');
+
 const tokens = require('./tokens');
-const commands = require('./commands');
 
 const client = new Discord.Client();
+const commands = new CommandManager();
 
 client.on('ready', () => {
-  console.log(`Logged in as ${client.user.tag}!`);
+  console.log(`Up n' ready for duty!`);
 });
 
 client.on('message', msg => {
-  if (msg.content === 'ping') {
-    msg.reply('pong');
-  }
+  commands.check(client, msg);
 });
 
 client.login(tokens.DISCORD);
