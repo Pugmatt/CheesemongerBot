@@ -10,10 +10,13 @@ class CommandManager {
             let moduleName = `./${file}`.replace('.js', '');
             let mod = require(moduleName);
             this.commands.push(new mod());
-        })
+        });
+
+        console.log("Loaded " + this.commands.length + " command(s)");
     }
 
     check(client, msg) {
+        const content = msg.content;
         const parts = msg.content.split(" ");
 
         if(parts.length === 0) return;
@@ -22,9 +25,13 @@ class CommandManager {
         const args = parts.splice(0, 1);
 
         for(let com of this.commands) {
-            if(command.toLowerCase() !== com.command.toLowerCase()) continue;
-            
+            const value = !com.raw ? command : content;
+
+            if(value.toLowerCase() !== com.command.toLowerCase()) continue;
+                
             com.run(client, msg);
+
+            break;
         }
     }
 }

@@ -8,7 +8,7 @@ const client = new Discord.Client();
 const commands = new CommandManager();
 
 client.on('ready', () => {
-  console.log(`Up n' ready for duty!`);
+  console.log("Up n' ready for duty!");
 });
 
 client.on('message', msg => {
