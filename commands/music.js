@@ -1,4 +1,7 @@
 const ytdl = require('ytdl-core');
+const ytSearch = require('youtube-search');
+
+const tokens = require('../tokens');
 
 class MusicCommand {
     constructor() {
@@ -7,6 +10,12 @@ class MusicCommand {
         this.queue = [];
         this.playing = false;
         this.dispatcher;
+
+        this.ytOpts = {
+            maxResults: 1,
+            type: 'video',
+            key: tokens.YOUTUBE
+        };
     }
 
     run(client, msg, data) {
@@ -19,11 +28,22 @@ class MusicCommand {
 
                 var regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
                 var match = args[0].match(regExp);
+
+                // Play a direct youtube link if supplied.
+                // If not, then search for a video and play the first result
                 if(match)
                     this.play(msg.channel, msg.member.voice.channel, args[0]);
-                else
-                    msg.channel.send("Invalid YouTube link.")
+                else {
+                    const thus = this;
+                    ytSearch(args.join(" "), this.ytOpts, function(err, results) {
+                        if(err) {
+                            msg.channel.send("Error finding a video. Please try again in a few seconds.");
+                            return console.log(err);
+                        }
 
+                        thus.play(msg.channel, msg.member.voice.channel, results[0].link);
+                    });
+                }
                 break;
             case 1:
                 if(this.dispatcher)
@@ -33,7 +53,7 @@ class MusicCommand {
                 break;
             case 2:
                 if(this.dispatcher) {
-                    // Glitches on some versions of node without calling resume twice on this version of discordjs
+                    // Glitches on some versions of nodejs without calling resume twice on this version of discordjs
                     this.dispatcher.resume();
                     this.dispatcher.pause();
                     this.dispatcher.resume();
@@ -70,6 +90,9 @@ class MusicCommand {
 
         const stream = ytdl(link, { filter: 'audioonly' }).on('error', e => {
             channel.send("Shit broke. Re-check if the given link is correct, or try again in a few seconds.");
+            thus.playing = false;
+            thus.nextQueue(channel, voiceChannel);
+            thus.dispatcher = null;
         }).on('info',function(info) {
             channel.send(":notes: Playing: " + info.videoDetails.title);
         });
