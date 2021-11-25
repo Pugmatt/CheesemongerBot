@@ -1,4 +1,3 @@
-
 class MedicCommand {
     constructor() {
         this.command = "medic!";

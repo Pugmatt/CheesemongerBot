@@ -27,9 +27,15 @@ class CommandManager {
         for(let com of this.commands) {
             const value = !com.raw ? command : content;
 
-            if(value.toLowerCase() !== com.command.toLowerCase()) continue;
+            let commandSet = com.command;
+            if(!Array.isArray(commandSet))
+                commandSet = [commandSet];
+
+            const index = commandSet.map(c => c.toLowerCase()).indexOf(value.toLowerCase());
+
+            if(index === -1) continue;
                 
-            com.run(client, msg);
+            com.run(client, msg, index);
 
             break;
         }
