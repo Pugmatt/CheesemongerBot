@@ -22,7 +22,8 @@ class CommandManager {
         if(parts.length === 0) return;
 
         const command = parts[0];
-        const args = parts.splice(0, 1);
+        parts.splice(0, 1)
+        const args = parts;
 
         for(let com of this.commands) {
             const value = !com.raw ? command : content;
@@ -30,12 +31,12 @@ class CommandManager {
             let commandSet = com.command;
             if(!Array.isArray(commandSet))
                 commandSet = [commandSet];
-
+                
             const index = commandSet.map(c => c.toLowerCase()).indexOf(value.toLowerCase());
 
             if(index === -1) continue;
                 
-            com.run(client, msg, index);
+            com.run(client, msg, {command: command, args: args, index: index});
 
             break;
         }
