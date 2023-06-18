@@ -5,9 +5,7 @@ class MedicCommand {
     }
 
     run(client, msg) {
-        msg.channel.send(this.msgs[Math.floor(Math.random() * 8)], {
-            files: ["https://i.imgur.com/EWdC60g.png"]
-        });
+        msg.channel.send({content: this.msgs[Math.floor(Math.random() * 8)], files: ["https://i.imgur.com/EWdC60g.png"]});
     }
 }
 
