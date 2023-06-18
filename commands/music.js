@@ -35,14 +35,13 @@ class MusicCommand {
         if (match)
           this.play(msg.channel, msg.member.voice.channel, args[0]);
         else {
-          const thus = this;
-          ytSearch(args.join(" "), this.ytOpts, function(err, results) {
+          ytSearch(args.join(" "), this.ytOpts, (err, results) => {
             if (err) {
               msg.channel.send("Error finding a video. Please try again in a few seconds.");
               return console.log(err);
             }
 
-            thus.play(msg.channel, msg.member.voice.channel, results[0].link);
+            this.play(msg.channel, msg.member.voice.channel, results[0].link);
           });
         }
         break;
@@ -60,10 +59,8 @@ class MusicCommand {
           msg.channel.send("No song currently playing to resume.");
         break;
       case 3:
-        if (this.player) {
+        if (this.playing) {
           this.player.stop();
-          this.playing = false;
-          this.nextQueue(msg.channel, msg.member.voice.channel);
         }
         else
           msg.channel.send("No song currently playing to skip.");
@@ -88,11 +85,7 @@ class MusicCommand {
       selfDeaf: false,
       selfMute: false
     });
-    this.player = createAudioPlayer({
-      behaviors: {
-        noSubscriber: NoSubscriberBehavior.Play,
-      },
-    });
+    this.player = createAudioPlayer();
 
     channel.send("Grabbing song...");
 
@@ -132,10 +125,11 @@ class MusicCommand {
         //player.play(getNextResource());
       //});
 
-      this.player.on('finish', () => {
-        this.playing = false;
-        this.nextQueue(channel, voiceChannel);
-        this.player = null;
+      this.player.on('stateChange', (oldState, newState) => {
+        if (newState.status == "idle") {
+          this.playing = false;
+          this.nextQueue(channel, voiceChannel);
+        }
       });
 
     });
